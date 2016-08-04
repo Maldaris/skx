@@ -24,12 +24,10 @@ fun parse(i: InputStream): XML {
     val dFactory = DocumentBuilderFactory.newInstance()
     val dBuilder = dFactory.newDocumentBuilder()
     val doc = dBuilder.parse(i)
-    return node {
-        root.apply {
-            name = doc.documentElement.tagName
-            if (doc.documentElement.hasChildNodes()) {
-                parse(this, doc.documentElement.childNodes)
-            }
+    return xml {
+        name = doc.documentElement.tagName
+        if (doc.documentElement.hasChildNodes()) {
+            parse(this, doc.documentElement.childNodes)
         }
     }
 }
