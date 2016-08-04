@@ -21,11 +21,11 @@ class XML {
         this.root = parse(i).root
     }
     var root : Node = Node()
-    fun addChild(c : Node) = root.addChild(c)
+    fun addChild(c : Node?) = root.addChild(c)
     fun removeChild(c : Node) = root.removeChild(c)
-    operator fun plusAssign(c : Node) = addChild(c)
+    operator fun plusAssign(c : Node?) = addChild(c)
     operator fun minusAssign(c : Node) : Unit = removeChild(c)
-    operator fun plusAssign(x : XML) = addChild(x.root)
+    operator fun plusAssign(x : XML?) = addChild(x?.root)
     override fun toString() : String {
         return root.render(StringBuilder(), "\t").toString()
     }
@@ -76,7 +76,8 @@ class Node {
     }
 
     fun hasChild(c : Node) : Boolean = this.indexOf(c) >= 0
-    fun addChild(c : Node) {
+    fun addChild(c : Node?) {
+        if(c == null) return
         if(hasChild(c))
             return
         children = children.plus(c)
