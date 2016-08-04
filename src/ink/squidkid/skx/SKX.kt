@@ -135,6 +135,13 @@ class Node {
         return findNode(sp[0])?.signature(sp.slice(1..sp.size-1).joinToString(separator="."))
     }
 
+    fun attr(s : String) : Attr? {
+        attr.forEach {
+            if(it.name.equals(s)) return it
+        }
+        return null
+    }
+
     operator fun plusAssign(c : Node) = addChild(c)
     operator fun plusAssign(a : Attr) = addAttr(a)
     operator fun minusAssign(c : Node) = removeChild(c)
