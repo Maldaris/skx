@@ -142,6 +142,12 @@ class Node {
         return null
     }
 
+    val first : Node?
+        get() {
+            if(children.size == 0) return null
+            return children[0]
+        }
+
     operator fun plusAssign(c : Node) = addChild(c)
     operator fun plusAssign(a : Attr) = addAttr(a)
     operator fun minusAssign(c : Node) = removeChild(c)
@@ -181,5 +187,13 @@ class Node {
 }
 class Attr(var name : String = "attrib", var value : String = "value")
 
-fun xml(init : XML.() -> Unit): XML = XML().apply(init)
-fun node(init : XML.() -> Unit): XML = XML().apply(init)
+fun xml(init : Node.() -> Unit): XML {
+    val ret = XML()
+    ret.root.apply(init)
+    return ret
+}
+fun node(init : Node.() -> Unit): XML {
+    val ret = XML()
+    ret.root.apply(init)
+    return ret
+}
