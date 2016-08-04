@@ -91,6 +91,43 @@ class Node {
         this.attr = this.attr.filter { !it.equals(a) }.toTypedArray()
     }
 
+    fun findNode(s : String) : Node? {
+
+        if(name.equals(s)) return this
+
+        children.forEach {
+            if (it.name.equals(s)) return it else {
+                val n = it.findNode(s)
+                if(n != null) return n
+            }
+        }
+
+        return null
+    }
+    fun findNode(a : Attr) : Node? {
+
+        if(hasAttr(a)) return this
+
+        children.forEach {
+            if(it.hasAttr(a)) return it
+            else {
+                val n = it.findNode(a)
+                if(n != null) return n
+            }
+        }
+
+        return null
+    }
+
+    fun signature(s : String) : Node?{
+        val sp : Array<String> = s.split(".").toTypedArray()
+        if(sp.size == 0)
+            return null
+        if(sp.size == 1)
+            return findNode(s)
+        return findNode(sp[0])?.signature(sp.slice(1..sp.size-1).joinToString(separator="."))
+    }
+
     operator fun plusAssign(c : Node) = addChild(c)
     operator fun plusAssign(a : Attr) = addAttr(a)
     operator fun minusAssign(c : Node) = removeChild(c)
