@@ -25,6 +25,7 @@ class XML {
     fun removeChild(c : Node) = root.removeChild(c)
     operator fun plusAssign(c : Node) = addChild(c)
     operator fun minusAssign(c : Node) : Unit = removeChild(c)
+    operator fun plusAssign(x : XML) = addChild(x.root)
     override fun toString() : String {
         return root.render(StringBuilder(), "\t").toString()
     }
@@ -39,10 +40,12 @@ class Node {
     var body : String = ""
     var attr : Array<Attr>  = arrayOf()
     var children : Array<Node> = arrayOf()
-    constructor(name : String? = null, attr : Array<Attr>? = null, children  : Array<Node>? = null){
+    var parent : Node?
+    constructor(name : String? = null, attr : Array<Attr>? = null, children  : Array<Node>? = null, parent : Node? = null){
         if(name != null) this.name = name
         if(attr != null) this.attr = attr
         if(children != null) this.children = children
+        this.parent = parent
     }
     override fun equals(obj : Any?) : Boolean{
         if(obj is Node){
@@ -77,9 +80,13 @@ class Node {
         if(hasChild(c))
             return
         children = children.plus(c)
+        c.parent = this
     }
     fun removeChild(c : Node){
         children = children.filter { !c.equals(it) }.toTypedArray()
+    }
+    fun removeChild(s : String){
+        children = children.filter { !it.name.equals(s) }.toTypedArray()
     }
 
     fun hasAttr(a : Attr) : Boolean = indexOf(a) >= 0
@@ -132,6 +139,7 @@ class Node {
     operator fun plusAssign(a : Attr) = addAttr(a)
     operator fun minusAssign(c : Node) = removeChild(c)
     operator fun minusAssign(a : Attr) = removeAttr(a)
+    operator fun minusAssign(s : String) = removeChild(s)
 
     fun applyRecursively(f : Node.() -> Unit) {
         this.apply(f)
@@ -166,5 +174,5 @@ class Node {
 }
 class Attr(var name : String = "attrib", var value : String = "value")
 
-fun xml( init : XML.() -> Unit): XML = XML().apply(init)
+fun xml(init : XML.() -> Unit): XML = XML().apply(init)
 fun node(init : XML.() -> Unit): XML = XML().apply(init)
