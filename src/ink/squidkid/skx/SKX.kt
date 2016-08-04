@@ -23,8 +23,8 @@ class XML {
     var root : Node = Node()
     fun addChild(c : Node) = root.addChild(c)
     fun removeChild(c : Node) = root.removeChild(c)
-    fun plusAssign(c : Node) = addChild(c)
-    fun minusAssign(c : Node) : Boolean = removeChild(c)
+    operator fun plusAssign(c : Node) = addChild(c)
+    operator fun minusAssign(c : Node) : Unit = removeChild(c)
     override fun toString() : String {
         return root.render(StringBuilder(), "\t").toString()
     }
@@ -78,28 +78,23 @@ class Node {
             return
         children = children.plus(c)
     }
-    fun removeChild(c : Node) : Boolean {
-        val sz = children.size
-        children = children.filter { c.equals(it) }.toTypedArray()
-        return sz != children.size
+    fun removeChild(c : Node){
+        children = children.filter { !c.equals(it) }.toTypedArray()
     }
 
     fun hasAttr(a : Attr) : Boolean = indexOf(a) >= 0
-    fun addAttr(a : Attr) : Boolean {
-        if(hasAttr(a)) return false
+    fun addAttr(a : Attr) {
+        if(hasAttr(a)) return
         this.attr = this.attr.plus(a)
-        return true
     }
-    fun removeAttr(a : Attr) : Boolean {
-        val sz = this.attr.size
-        this.attr = this.attr.filter { it.equals(a) }.toTypedArray()
-        return sz != this.attr.size
+    fun removeAttr(a : Attr) {
+        this.attr = this.attr.filter { !it.equals(a) }.toTypedArray()
     }
 
-    fun plusAssign(c : Node) = addChild(c)
-    fun plusAssign(a : Attr) : Boolean = addAttr(a)
-    fun minusAssign(c : Node) : Boolean = removeChild(c)
-    fun minusAssign(a : Attr) : Boolean = removeAttr(a)
+    operator fun plusAssign(c : Node) = addChild(c)
+    operator fun plusAssign(a : Attr) = addAttr(a)
+    operator fun minusAssign(c : Node) = removeChild(c)
+    operator fun minusAssign(a : Attr) = removeAttr(a)
 
     fun applyRecursively(f : Node.() -> Unit) {
         this.apply(f)
